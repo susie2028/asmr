@@ -40,7 +40,7 @@ function playPngSequence(elementId, folder, frameCount, frameDurationMs, autoSta
         timer = null;
     }
 
-    function playOnce(oneShotFrameDurationMs = frameDurationMs) {
+    function playOnce(oneShotFrameDurationMs = frameDurationMs, onComplete = null) {
         stop();
         currentFrame = 0;
         imageElement.src = frames[currentFrame];
@@ -50,7 +50,11 @@ function playPngSequence(elementId, folder, frameCount, frameDurationMs, autoSta
             if (currentFrame >= frameCount) {
                 window.clearInterval(timer);
                 timer = null;
-                start();
+                if (onComplete) {
+                    onComplete();
+                } else {
+                    start();
+                }
                 return;
             }
 
@@ -65,7 +69,11 @@ function playPngSequence(elementId, folder, frameCount, frameDurationMs, autoSta
     return { start, stop, playOnce };
 }
 
-playPngSequence("eyes", "assets/eyes_motion", 16, 180);
+const eyesLoop = playPngSequence("eyes", "assets/eyes_motion", 16, 180);
+const eyesStare = playPngSequence("eyes", "assets/eyes_stare", 16, 70, false);
+const dogImage = document.getElementById("dogBody");
+const dogRestSrc = dogImage?.getAttribute("src");
+const dogShake = playPngSequence("dogBody", "assets/tales_shake", 16, 65, false);
 const bookSequence = playPngSequence("book", "assets/book_motion", 16, 250);
 const bookAudio = document.getElementById("bookAudio");
 const lpImage = document.getElementById("lp");
@@ -415,7 +423,7 @@ function replaySound(audio) {
 
 function setupHoverScaling() {
     const scene = document.querySelector(".scene");
-    const targets = Array.from(scene.querySelectorAll(".hover-grow")).map((element) => ({
+    const targets = Array.from(scene.querySelectorAll("[data-hover-bounds]")).map((element) => ({
         element,
         hitImage: element,
         bounds: element.dataset.hoverBounds.split(",").map(Number),
@@ -437,7 +445,7 @@ function setupHoverScaling() {
         const x = clientX - sceneBounds.left;
         const y = clientY - sceneBounds.top;
 
-        for (const target of targets) {
+        for (const target of [...targets].reverse()) {
             const { hitImage } = target;
             let [left, top, width, height] = target.bounds;
             const fitScale = Math.min(
@@ -478,7 +486,10 @@ function setupHoverScaling() {
     function updateHoveredTarget(target) {
         hoveredTarget = target;
         targets.forEach(({ element }) => {
-            element.classList.toggle("is-hovered", element === hoveredTarget?.element);
+            element.classList.toggle(
+                "is-hovered",
+                element === hoveredTarget?.element && element.classList.contains("hover-grow")
+            );
         });
         scene.classList.toggle("is-over-interactive", hoveredTarget !== null);
     }
@@ -498,6 +509,14 @@ function setupHoverScaling() {
         } else if (target.element.id === "book") {
             bookSequence?.playOnce(55);
             replaySound(bookAudio);
+        } else if (target.element.id === "dogBody" || target.element.id === "eyes") {
+            eyesLoop?.stop();
+            eyesStare?.playOnce(70, () => eyesLoop?.start());
+            dogShake?.playOnce(65, () => {
+                if (dogImage) {
+                    dogImage.src = dogRestSrc;
+                }
+            });
         } else if (target.element.id === "lp") {
             selectNextLp();
         } else if (target.element === playButton) {
