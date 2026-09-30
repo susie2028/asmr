@@ -20,6 +20,7 @@ body {
 .scene {
     position: relative;
     background-color: #fff;
+    touch-action: manipulation;
 
     width: min(75vw, 1536px);
     aspect-ratio: 1536 / 1024;

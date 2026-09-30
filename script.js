@@ -430,6 +430,7 @@ function setupHoverScaling() {
     }
 
     let hoveredTarget = null;
+    let lastTouchActivationAt = 0;
 
     function findTargetAtPoint(clientX, clientY) {
         const sceneBounds = scene.getBoundingClientRect();
@@ -472,34 +473,57 @@ function setupHoverScaling() {
         scene.classList.toggle("is-over-interactive", hoveredTarget !== null);
     }
 
-    scene.addEventListener("pointermove", (event) => {
-        updateHoveredTarget(findTargetAtPoint(event.clientX, event.clientY));
-    });
-
-    scene.addEventListener("click", (event) => {
-        const clickedTarget = findTargetAtPoint(event.clientX, event.clientY);
-
-        if (!clickedTarget) {
+    function activateTarget(target) {
+        if (!target) {
             return;
         }
 
-        if (clickedTarget.element.id === "window") {
+        if (target.element.id === "window") {
             toggleWindowWeather();
-        } else if (clickedTarget.element.id === "coffee") {
+        } else if (target.element.id === "coffee") {
             spawnCoffeeEffect();
-        } else if (clickedTarget.element.id === "cookies") {
+        } else if (target.element.id === "cookies") {
             playCookiesMotion();
             replaySound(cookiesAudio);
-        } else if (clickedTarget.element.id === "book") {
+        } else if (target.element.id === "book") {
             bookSequence?.playOnce(55);
             replaySound(bookAudio);
-        } else if (clickedTarget.element.id === "lp") {
+        } else if (target.element.id === "lp") {
             selectNextLp();
-        } else if (clickedTarget.element === playButton) {
+        } else if (target.element === playButton) {
             toggleLpPlayback();
         }
 
         playLpAudio();
+    }
+
+    scene.addEventListener("pointermove", (event) => {
+        updateHoveredTarget(findTargetAtPoint(event.clientX, event.clientY));
+    });
+
+    scene.addEventListener("pointerup", (event) => {
+        if (event.pointerType !== "touch") {
+            return;
+        }
+
+        const nativeControl = event.target.closest(
+            ".scene-icon, .control-popover, input, .track-action"
+        );
+
+        if (nativeControl) {
+            return;
+        }
+
+        lastTouchActivationAt = Date.now();
+        activateTarget(findTargetAtPoint(event.clientX, event.clientY));
+    });
+
+    scene.addEventListener("click", (event) => {
+        if (event.detail > 0 && Date.now() - lastTouchActivationAt < 800) {
+            return;
+        }
+
+        activateTarget(findTargetAtPoint(event.clientX, event.clientY));
     });
 
     scene.addEventListener("pointerleave", () => {
