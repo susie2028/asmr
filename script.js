@@ -350,7 +350,9 @@ const cookiesMotionFrames = buildFramePaths("assets/cookies_motion", 16);
 const cookiesImage = document.getElementById("cookies");
 const cookiesRestSrc = cookiesImage?.getAttribute("src");
 const cookiesAudio = document.getElementById("cookiesAudio");
+const dogAudio = document.getElementById("dogAudio");
 let cookiesMotionTimer = null;
+let dogAudioTimer = null;
 
 preloadFrames(coffeeEffectFrames);
 preloadFrames(cookiesMotionFrames);
@@ -419,6 +421,25 @@ function replaySound(audio) {
     audio.pause();
     audio.currentTime = 0;
     audio.play().catch(() => {});
+}
+
+function replayShortDogSound() {
+    if (!dogAudio) {
+        return;
+    }
+
+    if (dogAudioTimer !== null) {
+        window.clearTimeout(dogAudioTimer);
+    }
+
+    dogAudio.pause();
+    dogAudio.currentTime = 0;
+    dogAudio.play().catch(() => {});
+    dogAudioTimer = window.setTimeout(() => {
+        dogAudio.pause();
+        dogAudio.currentTime = 0;
+        dogAudioTimer = null;
+    }, 900);
 }
 
 function setupHoverScaling() {
@@ -525,6 +546,7 @@ function setupHoverScaling() {
                     dogImage.src = dogRestSrc;
                 }
             });
+            replayShortDogSound();
         } else if (target.element.id === "lp") {
             selectNextLp();
         } else if (target.element === playButton) {
