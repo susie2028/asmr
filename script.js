@@ -432,20 +432,30 @@ function setupHoverScaling() {
     let hoveredTarget = null;
     let lastTouchActivationAt = 0;
 
-    function findTargetAtPoint(clientX, clientY) {
+    function findTargetAtPoint(clientX, clientY, minimumTouchSize = 0) {
         const sceneBounds = scene.getBoundingClientRect();
         const x = clientX - sceneBounds.left;
         const y = clientY - sceneBounds.top;
 
         for (const target of targets) {
             const { hitImage } = target;
-            const [left, top, width, height] = target.bounds;
+            let [left, top, width, height] = target.bounds;
             const fitScale = Math.min(
                 sceneBounds.width / hitImage.naturalWidth,
                 sceneBounds.height / hitImage.naturalHeight
             );
             const renderedWidth = hitImage.naturalWidth * fitScale;
             const renderedHeight = hitImage.naturalHeight * fitScale;
+
+            if (target.element === playButton && minimumTouchSize > 0) {
+                const expandedWidth = Math.max(width, minimumTouchSize / renderedWidth);
+                const expandedHeight = Math.max(height, minimumTouchSize / renderedHeight);
+                left -= (expandedWidth - width) / 2;
+                top -= (expandedHeight - height) / 2;
+                width = expandedWidth;
+                height = expandedHeight;
+            }
+
             const imageX = x - (sceneBounds.width - renderedWidth) / 2;
             const imageY = y - (sceneBounds.height - renderedHeight) / 2;
 
@@ -515,7 +525,7 @@ function setupHoverScaling() {
         }
 
         lastTouchActivationAt = Date.now();
-        activateTarget(findTargetAtPoint(event.clientX, event.clientY));
+        activateTarget(findTargetAtPoint(event.clientX, event.clientY, 44));
     });
 
     scene.addEventListener("click", (event) => {
