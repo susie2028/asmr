@@ -282,11 +282,11 @@ body {
     height: 100%;
     object-fit: contain;
     transform-origin: 26.6% 76.5%;
-    transition: transform 180ms ease-out;
+    transition: scale 180ms ease-out;
 }
 
 .player-button.is-hovered img {
-    transform: scale(1.25);
+    scale: 1.25;
 }
 
 .layer-ui,
