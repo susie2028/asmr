@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ASMR Study</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="scene">
+
+        <!-- 배경/장면 -->
+        <img src="assets/window_sunny.png" class="layer layer-background window hover-grow" id="window" data-hover-bounds="0.0437,0.0241,0.5436,0.4037">
+        <img src="assets/book_shelf.png" class="layer layer-furniture">
+        <img src="assets/book_motion/frame_01.png" class="layer layer-detail hover-grow" id="book" data-hover-bounds="0.6214,0.6833,0.1235,0.1093">
+        <img src="assets/lp1_stop.png" class="layer layer-detail hover-grow" id="lp" data-hover-bounds="0.0553,0.6537,0.2097,0.0704" aria-label="LP 선택">
+        <img src="assets/dog_body.png" class="layer layer-character">
+        <img src="assets/eyes_motion/frame_01.png" class="layer layer-detail" id="eyes">
+        <img src="assets/hand.png" class="layer layer-foreground">
+        <img src="assets/coffee.png" class="layer layer-foreground hover-grow" id="coffee" data-hover-bounds="0.449,0.862,0.1132,0.1093">
+        <img src="assets/cookies.png" class="layer layer-foreground hover-grow" id="cookies" data-hover-bounds="0.5931,0.8889,0.2046,0.0917">
+
+        <!-- 플레이어 -->
+        <img src="assets/player_box.png" class="layer player-box layer-background">
+        <img src="assets/player_stick.png" class="layer layer-ui player-stick layrer-foreground">
+
+        <button class="player-button" id="playButton" data-hover-bounds="0.2547,0.7491,0.0219,0.0324" aria-label="LP 재생/정지" aria-pressed="false">
+            <img src="assets/player_button.png">
+        </button>
+
+        <div class="scene-icons" aria-label="장면 설정">
+            <button class="scene-icon" id="musicPanelToggle" type="button" aria-label="음악 목록 열기" aria-expanded="false" aria-controls="musicPanel">
+                <img src="assets/music_icon.png" alt="">
+            </button>
+            <button class="scene-icon weather-icon" id="weatherToggle" type="button" aria-label="비 오는 날씨로 바꾸기" aria-pressed="false">
+                <img id="weatherIcon" src="assets/sun_icon.png" alt="">
+            </button>
+            <button class="scene-icon" id="volumePanelToggle" type="button" aria-label="음량 조절 열기" aria-expanded="false" aria-controls="volumePanel">
+                <img src="assets/volume_icon.png" alt="">
+            </button>
+        </div>
+
+        <section class="control-popover music-popover" id="musicPanel" aria-label="음악 선택" hidden>
+            <header class="popover-heading"><span>MUSIC</span><span>3 TRACKS</span></header>
+            <div class="track-list">
+                <div class="track-row" data-track-index="0">
+                    <span class="track-title">If I Can't Have You</span>
+                    <button class="track-action" type="button" data-track-play="0" aria-label="재생">
+                        <span class="track-action-icon" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="track-row" data-track-index="1">
+                    <span class="track-title">Instrumental Melody</span>
+                    <button class="track-action" type="button" data-track-play="1" aria-label="재생">
+                        <span class="track-action-icon" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="track-row" data-track-index="2">
+                    <span class="track-title">A Glass of Wine</span>
+                    <button class="track-action" type="button" data-track-play="2" aria-label="재생">
+                        <span class="track-action-icon" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="control-popover volume-popover" id="volumePanel" aria-label="음량 조절" hidden>
+            <header class="popover-heading"><span>VOLUME</span><span>LEVEL</span></header>
+            <label class="volume-control" for="lpVolume">
+                <span class="volume-label"><span>LP MUSIC</span><output id="lpVolumeValue">100%</output></span>
+                <input id="lpVolume" type="range" min="0" max="1" step="0.01" value="1">
+            </label>
+            <label class="volume-control" for="rainVolume">
+                <span class="volume-label"><span>RAIN</span><output id="rainVolumeValue">100%</output></span>
+                <input id="rainVolume" type="range" min="0" max="1" step="0.01" value="1">
+            </label>
+        </section>
+
+    </main>
+
+    <audio id="rainAudio" preload="auto" loop>
+        <source src="assets/liecio-light-rain-109591.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="lpAudio" preload="auto" loop>
+        <source id="lpAudioSource" src="assets/chronopopofficial-lofi-sample-if-i-cant-have-you-330746.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bookAudio" preload="auto">
+        <source src="assets/dragon-studio-flipping-book-page-499646.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="cookiesAudio" preload="auto">
+        <source src="assets/freesound_community-eating-chips-81092.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
