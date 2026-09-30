@@ -470,7 +470,7 @@ function replayShortDogSound() {
 
 function setupHoverScaling() {
     const scene = document.querySelector(".scene");
-    const targets = Array.from(scene.querySelectorAll("[data-hover-bounds]")).map((element) => ({
+    const targets = Array.from(scene.querySelectorAll(".hover-grow, #dogBody, #eyes")).map((element) => ({
         element,
         hitImage: element,
         bounds: element.dataset.hoverBounds.split(",").map(Number),
@@ -543,7 +543,8 @@ function setupHoverScaling() {
         targets.forEach(({ element }) => {
             element.classList.toggle(
                 "is-hovered",
-                element === hoveredTarget?.element && element.classList.contains("hover-grow")
+                element === hoveredTarget?.element
+                    && (element === playButton || element.classList.contains("hover-grow"))
             );
         });
         scene.classList.toggle("is-over-interactive", hoveredTarget !== null);
