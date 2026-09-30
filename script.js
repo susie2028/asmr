@@ -437,6 +437,14 @@ function setupHoverScaling() {
         });
     }
 
+    const topFirstTargets = targets
+        .map((target, order) => ({
+            ...target,
+            order,
+            zIndex: Number.parseInt(getComputedStyle(target.element).zIndex, 10) || 0,
+        }))
+        .sort((first, second) => second.zIndex - first.zIndex || second.order - first.order);
+
     let hoveredTarget = null;
     let lastTouchActivationAt = 0;
 
@@ -445,7 +453,7 @@ function setupHoverScaling() {
         const x = clientX - sceneBounds.left;
         const y = clientY - sceneBounds.top;
 
-        for (const target of [...targets].reverse()) {
+        for (const target of topFirstTargets) {
             const { hitImage } = target;
             let [left, top, width, height] = target.bounds;
             const fitScale = Math.min(
