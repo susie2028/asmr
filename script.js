@@ -227,27 +227,6 @@ document.querySelectorAll("[data-track-play]").forEach((button) => {
     });
 });
 
-function connectVolumeControl(inputId, valueId, audio) {
-    const input = document.getElementById(inputId);
-    const output = document.getElementById(valueId);
-
-    if (!input || !output || !audio) {
-        return;
-    }
-
-    const updateVolume = () => {
-        const volume = Number(input.value);
-        audio.volume = volume;
-        output.value = `${Math.round(volume * 100)}%`;
-        output.textContent = `${Math.round(volume * 100)}%`;
-    };
-
-    input.addEventListener("input", updateVolume);
-    updateVolume();
-}
-
-connectVolumeControl("lpVolume", "lpVolumeValue", lpAudio);
-
 document.addEventListener("click", (event) => {
     if (event.target.closest(".control-popover, #musicPanelToggle, #volumePanelToggle")) {
         return;
@@ -259,7 +238,6 @@ document.addEventListener("click", (event) => {
 const windowImage = document.getElementById("window");
 const sunnyWindowSrc = windowImage?.getAttribute("src");
 const rainAudio = document.getElementById("rainAudio");
-connectVolumeControl("rainVolume", "rainVolumeValue", rainAudio);
 const weatherToggle = document.getElementById("weatherToggle");
 const weatherIcon = document.getElementById("weatherIcon");
 const rainyWindowFrames = Array.from(
@@ -353,6 +331,54 @@ const cookiesAudio = document.getElementById("cookiesAudio");
 const dogAudio = document.getElementById("dogAudio");
 let cookiesMotionTimer = null;
 let dogAudioTimer = null;
+
+const audioVolumes = {
+    master: 1,
+    lp: 1,
+    rain: 1,
+    effects: 1,
+};
+
+const audioGroups = {
+    lp: [lpAudio],
+    rain: [rainAudio],
+    effects: [bookAudio, cookiesAudio, dogAudio],
+};
+
+function applyAudioVolumes() {
+    Object.entries(audioGroups).forEach(([group, audios]) => {
+        audios.forEach((audio) => {
+            if (audio) {
+                audio.volume = audioVolumes.master * audioVolumes[group];
+            }
+        });
+    });
+}
+
+function connectVolumeControl(inputId, valueId, volumeKey) {
+    const input = document.getElementById(inputId);
+    const output = document.getElementById(valueId);
+
+    if (!input || !output) {
+        return;
+    }
+
+    const updateVolume = () => {
+        const volume = Number(input.value);
+        audioVolumes[volumeKey] = volume;
+        output.value = `${Math.round(volume * 100)}%`;
+        output.textContent = `${Math.round(volume * 100)}%`;
+        applyAudioVolumes();
+    };
+
+    input.addEventListener("input", updateVolume);
+    updateVolume();
+}
+
+connectVolumeControl("masterVolume", "masterVolumeValue", "master");
+connectVolumeControl("lpVolume", "lpVolumeValue", "lp");
+connectVolumeControl("rainVolume", "rainVolumeValue", "rain");
+connectVolumeControl("effectsVolume", "effectsVolumeValue", "effects");
 
 preloadFrames(coffeeEffectFrames);
 preloadFrames(cookiesMotionFrames);

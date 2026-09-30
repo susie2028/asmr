@@ -70,6 +70,10 @@
 
         <section class="control-popover volume-popover" id="volumePanel" aria-label="음량 조절" hidden>
             <header class="popover-heading"><span>VOLUME</span><span>LEVEL</span></header>
+            <label class="volume-control" for="masterVolume">
+                <span class="volume-label"><span>MASTER</span><output id="masterVolumeValue">100%</output></span>
+                <input id="masterVolume" type="range" min="0" max="1" step="0.01" value="1">
+            </label>
             <label class="volume-control" for="lpVolume">
                 <span class="volume-label"><span>LP MUSIC</span><output id="lpVolumeValue">100%</output></span>
                 <input id="lpVolume" type="range" min="0" max="1" step="0.01" value="1">
@@ -77,6 +81,10 @@
             <label class="volume-control" for="rainVolume">
                 <span class="volume-label"><span>RAIN</span><output id="rainVolumeValue">100%</output></span>
                 <input id="rainVolume" type="range" min="0" max="1" step="0.01" value="1">
+            </label>
+            <label class="volume-control" for="effectsVolume">
+                <span class="volume-label"><span>OTHER FX</span><output id="effectsVolumeValue">100%</output></span>
+                <input id="effectsVolume" type="range" min="0" max="1" step="0.01" value="1">
             </label>
         </section>
 
