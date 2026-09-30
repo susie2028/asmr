@@ -431,11 +431,10 @@ function setupHoverScaling() {
 
     let hoveredTarget = null;
 
-    scene.addEventListener("pointermove", (event) => {
+    function findTargetAtPoint(clientX, clientY) {
         const sceneBounds = scene.getBoundingClientRect();
-        const x = event.clientX - sceneBounds.left;
-        const y = event.clientY - sceneBounds.top;
-        hoveredTarget = null;
+        const x = clientX - sceneBounds.left;
+        const y = clientY - sceneBounds.top;
 
         for (const target of targets) {
             const { hitImage } = target;
@@ -458,31 +457,45 @@ function setupHoverScaling() {
 
             if (normalizedX >= left && normalizedX <= left + width
                 && normalizedY >= top && normalizedY <= top + height) {
-                hoveredTarget = target;
-                break;
+                return target;
             }
         }
 
+        return null;
+    }
+
+    function updateHoveredTarget(target) {
+        hoveredTarget = target;
         targets.forEach(({ element }) => {
             element.classList.toggle("is-hovered", element === hoveredTarget?.element);
         });
         scene.classList.toggle("is-over-interactive", hoveredTarget !== null);
+    }
+
+    scene.addEventListener("pointermove", (event) => {
+        updateHoveredTarget(findTargetAtPoint(event.clientX, event.clientY));
     });
 
-    scene.addEventListener("click", () => {
-        if (hoveredTarget?.element.id === "window") {
+    scene.addEventListener("click", (event) => {
+        const clickedTarget = findTargetAtPoint(event.clientX, event.clientY);
+
+        if (!clickedTarget) {
+            return;
+        }
+
+        if (clickedTarget.element.id === "window") {
             toggleWindowWeather();
-        } else if (hoveredTarget?.element.id === "coffee") {
+        } else if (clickedTarget.element.id === "coffee") {
             spawnCoffeeEffect();
-        } else if (hoveredTarget?.element.id === "cookies") {
+        } else if (clickedTarget.element.id === "cookies") {
             playCookiesMotion();
             replaySound(cookiesAudio);
-        } else if (hoveredTarget?.element.id === "book") {
+        } else if (clickedTarget.element.id === "book") {
             bookSequence?.playOnce(55);
             replaySound(bookAudio);
-        } else if (hoveredTarget?.element.id === "lp") {
+        } else if (clickedTarget.element.id === "lp") {
             selectNextLp();
-        } else if (hoveredTarget?.element === playButton) {
+        } else if (clickedTarget.element === playButton) {
             toggleLpPlayback();
         }
 
